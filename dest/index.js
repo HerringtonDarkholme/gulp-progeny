@@ -33,7 +33,7 @@ initParseConfig = function(config) {
   var parser;
   parser = progeny(config);
   return function(path) {
-    return parser(path, false).filter(fs.existsSync).forEach(function(dep) {
+    return parser(path).filter(fs.existsSync).forEach(function(dep) {
       if (depCache[dep] == null) {
         depCache[dep] = {};
       }
@@ -57,12 +57,10 @@ module.exports = function(config) {
     };
     this.push(file);
     getDeps(path);
-    console.log(path);
     if (!processedFileNames[path]) {
       processedFileNames[path] = 1;
       return cb();
     }
-    console.log(depCache);
     cache = (depCache[path] != null ? depCache[path] : depCache[path] = {});
     deps = Object.keys(cache).filter(fs.existsSync);
     cache = depCache[path] = {};

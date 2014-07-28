@@ -120,7 +120,7 @@ module.exports = function(_arg) {
     });
     return depList.concat(altExts);
   };
-  parseDeps = function(path, parsedList, recursive) {
+  parseDeps = function(path, parsedList) {
     var deps, parentPath, source;
     if (path) {
       parentPath = sysPath.dirname(path);
@@ -131,9 +131,6 @@ module.exports = function(_arg) {
     deps = normalizeExt(deps);
     deps = prefixify(deps);
     deps = alternateExtension(deps);
-    if (!recursive) {
-      return;
-    }
     return deps.forEach(function(childPath) {
       if (!(__indexOf.call(parsedList, childPath) >= 0)) {
         parsedList.push(childPath);
@@ -143,11 +140,8 @@ module.exports = function(_arg) {
       }
     });
   };
-  return function(path, recursive) {
+  return function(path) {
     var depList, setting;
-    if (recursive == null) {
-      recursive = true;
-    }
     depList = [];
     if (extension == null) {
       extension = sysPath.extname(path).slice(1);
@@ -168,7 +162,7 @@ module.exports = function(_arg) {
     if (extensionsList == null) {
       extensionsList = setting.exclusion || [];
     }
-    parseDeps(path, depList, recursive);
+    parseDeps(path, depList);
     return depList;
   };
 };

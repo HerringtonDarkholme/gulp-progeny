@@ -22,7 +22,7 @@ makeFile = (path, type) ->
 initParseConfig = (config) ->
 	parser = progeny(config)
 	(path) ->
-		parser(path, false)
+		parser(path)
 			.filter(fs.existsSync)
 			.forEach((dep) ->
 				depCache[dep] ?= {}
@@ -41,13 +41,11 @@ module.exports = (config) ->
 		@push(file)
 		getDeps(path)
 
-		console.log(path)
 		# do nothing when start up
 		if !processedFileNames[path]
 			processedFileNames[path] = 1
 			return cb()
 
-		console.log(depCache)
 		cache = (depCache[path] ?= {})
 		deps = Object.keys(cache)
 			.filter(fs.existsSync)
