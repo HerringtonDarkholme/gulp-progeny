@@ -4,9 +4,6 @@ sysPath = require('path')
 fs = require('fs')
 progeny = require('./parse')
 
-depCache = {}
-processedFileNames = {}
-
 makeFile = (path, type) ->
 	file = new gutil.File({
 		base: sysPath.dirname(path)
@@ -19,7 +16,8 @@ makeFile = (path, type) ->
 		file.contents = fs.readFileSync(path)
 	file
 
-initParseConfig = (config) ->
+
+initParseConfig = (config, depCache) ->
 	parser = progeny(config)
 	(path) ->
 		parser(path)
@@ -30,7 +28,9 @@ initParseConfig = (config) ->
 			)
 
 module.exports = (config) ->
-	getDeps = initParseConfig(config)
+	depCache = {}
+	processedFileNames = {}
+	getDeps = initParseConfig(config, depCache)
 	return through.obj (file, enc, cb) ->
 		if file.isNull()
 			@push(file)

@@ -1,4 +1,4 @@
-var depCache, fs, gutil, initParseConfig, makeFile, processedFileNames, progeny, sysPath, through;
+var fs, gutil, initParseConfig, makeFile, progeny, sysPath, through;
 
 gutil = require('gulp-util');
 
@@ -9,10 +9,6 @@ sysPath = require('path');
 fs = require('fs');
 
 progeny = require('./parse');
-
-depCache = {};
-
-processedFileNames = {};
 
 makeFile = function(path, type) {
   var file;
@@ -29,7 +25,7 @@ makeFile = function(path, type) {
   return file;
 };
 
-initParseConfig = function(config) {
+initParseConfig = function(config, depCache) {
   var parser;
   parser = progeny(config);
   return function(path) {
@@ -43,8 +39,10 @@ initParseConfig = function(config) {
 };
 
 module.exports = function(config) {
-  var getDeps;
-  getDeps = initParseConfig(config);
+  var depCache, getDeps, processedFileNames;
+  depCache = {};
+  processedFileNames = {};
+  getDeps = initParseConfig(config, depCache);
   return through.obj(function(file, enc, cb) {
     var cache, childPath, deps, path, type, _i, _len, _ref;
     if (file.isNull()) {
