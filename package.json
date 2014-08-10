@@ -1,10 +1,10 @@
 {
   "name": "gulp-progeny",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Gulp plugin for dependencies building",
-  "main": "index.js",
+  "main": "dest/index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --compilers coffee:coffee-script/register"
   },
   "keywords": [
     "gulpplugin",
@@ -28,8 +28,8 @@
   "license": "Apache",
   "repository": {
     "type": "git",
-    "url": "https://github.com/HerringtonDarkholme/gulp-jedi.git"
+    "url": "https://github.com/HerringtonDarkholme/gulp-progeny.git"
   },
-  "homepage": "https://github.com/HerringtonDarkholme/gulp-jedi",
-  "bugs": "https://github.com/HerringtonDarkholme/gulp-jedi/issues"
+  "homepage": "https://github.com/HerringtonDarkholme/gulp-progeny",
+  "bugs": "https://github.com/HerringtonDarkholme/gulp-progeny/issues"
 }

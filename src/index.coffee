@@ -19,6 +19,7 @@ makeFile = (path, type) ->
 		file.contents = fs.readFileSync(path)
 	file
 
+
 initParseConfig = (config) ->
 	parser = progeny(config)
 	(path) ->
