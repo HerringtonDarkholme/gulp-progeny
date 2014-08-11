@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Gulp-progeny by HerringtonDarkholme</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Gulp-progeny</h1>
+        <p>Faster Gulp Building</p>
+
+        <p class="view"><a href="https://github.com/HerringtonDarkholme/gulp-progeny">View the Project on GitHub <small>HerringtonDarkholme/gulp-progeny</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/HerringtonDarkholme/gulp-progeny/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/HerringtonDarkholme/gulp-progeny/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/HerringtonDarkholme/gulp-progeny">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="gulp-progeny" class="anchor" href="#gulp-progeny"><span class="octicon octicon-link"></span></a>gulp-progeny</h1>
+
+<p>A dependency-resolving plugin for gulp.
+It grabs all files related to one edition to building system.</p>
+
+<h2>
+<a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h2>
+
+<p>Gulp provides <a href="https://github.com/wearefractal/gulp-cached">incremental building</a>.
+However it is agnostic about the dependencies among files.
+Say, if <code>child.jade</code> depends on <code>parent.jade</code>, then whenever <code>parent</code> changes <code>child</code> should be recompiled as well.
+Existing gulp plugins do not support this. Or one could fall back on <code>edit-wait-10s-view</code> loop.</p>
+
+<p><code>gulp-progeny</code> aims to solve this. If <code>parent.jade</code> is edited and passed to <code>gulp-progeny</code>, all files that recursively depends on that file will be collected by <code>progeny</code> and are passed to succesive building stream.</p>
+
+<h2>
+<a name="what-does-gulp-progeny-do" class="anchor" href="#what-does-gulp-progeny-do"><span class="octicon octicon-link"></span></a>What does gulp-progeny do</h2>
+
+<p>This plugin brings the agility of <a href="https://github.com/brunch/brunch">brunch</a> to gulp world.
+It provides generic dependency detection to various file types.
+<code>progeny</code> parses files by grepping specific <code>import statements</code>, and builds dependency trees for building tasks.
+So it just use Regular Expression to extract dependency information. This simple solution is fast and dirty, but also working.</p>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p><code>gulp-progeny</code> out of box supports <code>jade</code>, <code>jedi</code>,<code>less</code>, <code>sass</code> and <code>stylus</code>.
+To exploit the power of <code>gulp-progeny</code>, use <code>gulp-cached</code> in tandem.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">cache</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'gulp-cached'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">progeny</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'gulp-progeny'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">stylus</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'gulp-stylus'</span><span class="p">);</span>
+
+<span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">'style'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+  <span class="k">return</span> <span class="nx">gulp</span><span class="p">.</span><span class="nx">src</span><span class="p">(</span><span class="s1">'*.styl'</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">cache</span><span class="p">(</span><span class="s1">'style'</span><span class="p">))</span>
+    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">progeny</span><span class="p">())</span>
+    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">stylus</span><span class="p">())</span>
+<span class="p">});</span>
+
+<span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">'watch'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+  <span class="nx">gulp</span><span class="p">.</span><span class="nx">watch</span><span class="p">(</span><span class="s1">'*.styl'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'style'</span><span class="p">]);</span>
+<span class="p">});</span>
+</pre></div>
+
+<p><code>cached</code> will pass all files to <code>progeny</code> in the first run, which enables dependency tree building,
+just pass changed files later for incremental building.</p>
+
+<h2>
+<a name="advanced-configuration" class="anchor" href="#advanced-configuration"><span class="octicon octicon-link"></span></a>advanced configuration</h2>
+
+<p>Generally same as brunch's <a href="https://github.com/es128/progeny">progeny</a>.
+Just pass configuration to progeny constructor.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">progenyConfig</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1">// The file extension for the source code you want parsed</span>
+    <span class="c1">// Will be derived from the source file path if not specified</span>
+    <span class="nx">extension</span><span class="o">:</span> <span class="s1">'styl'</span><span class="p">,</span>
+
+    <span class="c1">// Array of multiple file extensions to try when looking for dependencies</span>
+    <span class="nx">extensionsList</span><span class="o">:</span> <span class="p">[</span><span class="s1">'scss'</span><span class="p">,</span> <span class="s1">'sass'</span><span class="p">],</span>
+
+    <span class="c1">// Regexp to run on each line of source code to match dependency references</span>
+    <span class="c1">// Make sure you wrap the file name part in (parentheses)</span>
+    <span class="nx">regexp</span><span class="o">:</span> <span class="sr">/^\s*@import\s+['"]?([^'"]+)['"]?/</span><span class="p">,</span>
+
+    <span class="c1">// File prefix to try (in addition to the raw value matched in the regexp)</span>
+    <span class="nx">prefix</span><span class="o">:</span> <span class="s1">'_'</span><span class="p">,</span>
+
+    <span class="c1">// Matched stuff to exclude: string, regex, or array of either/both</span>
+    <span class="nx">exclusion</span><span class="o">:</span> <span class="sr">/^compass/</span><span class="p">,</span>
+
+    <span class="c1">// In case a match starts with a slash, the absolute path to apply</span>
+    <span class="nx">rootPath</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">'path'</span><span class="p">,</span> <span class="s1">'to'</span><span class="p">,</span> <span class="s1">'project'</span><span class="p">)</span>
+<span class="p">};</span>
+<span class="kd">var</span> <span class="nx">progeny</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'gulp-progeny'</span><span class="p">)</span>
+
+<span class="nx">gulp</span><span class="p">.</span><span class="nx">src</span><span class="p">(</span><span class="s1">'*.styl'</span><span class="p">).</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">progeny</span><span class="p">(</span><span class="nx">progenyConfig</span><span class="p">))</span>
+</pre></div>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/HerringtonDarkholme">HerringtonDarkholme</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
