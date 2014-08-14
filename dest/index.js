@@ -14,11 +14,11 @@ depCache = {};
 
 processedFileNames = {};
 
-makeFile = function(path, type) {
+makeFile = function(path, type, base, cwd) {
   var file;
   file = new gutil.File({
-    base: sysPath.dirname(path),
-    cwd: __dirname,
+    base: base,
+    cwd: cwd,
     path: path
   });
   if (type === 'stream') {
@@ -46,7 +46,7 @@ module.exports = function(config) {
   var getDeps;
   getDeps = initParseConfig(config);
   return through.obj(function(file, enc, cb) {
-    var cache, childPath, deps, path, type, _i, _len, _ref;
+    var base, cache, childPath, cwd, deps, path, type, _i, _len, _ref;
     if (file.isNull()) {
       this.push(file);
       return cb();
@@ -55,6 +55,8 @@ module.exports = function(config) {
     type = (_ref = file.isStream()) != null ? _ref : {
       'stream': 'buffer'
     };
+    cwd = file.cwd;
+    base = file.base;
     this.push(file);
     getDeps(path);
     if (!processedFileNames[path]) {
@@ -66,7 +68,7 @@ module.exports = function(config) {
     cache = depCache[path] = {};
     for (_i = 0, _len = deps.length; _i < _len; _i++) {
       childPath = deps[_i];
-      this.push(makeFile(childPath, type));
+      this.push(makeFile(childPath, type, base, cwd));
       cache[childPath] = 1;
     }
     return cb();

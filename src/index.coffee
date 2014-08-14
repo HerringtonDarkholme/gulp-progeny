@@ -7,10 +7,10 @@ progeny = require('./parse')
 depCache = {}
 processedFileNames = {}
 
-makeFile = (path, type) ->
+makeFile = (path, type, base, cwd) ->
 	file = new gutil.File({
-		base: sysPath.dirname(path)
-		cwd: __dirname
+		base: base
+		cwd: cwd
 		path: path
 	})
 	if type is 'stream'
@@ -39,6 +39,8 @@ module.exports = (config) ->
 
 		path = file.path
 		type = file.isStream() ? 'stream' : 'buffer'
+		cwd = file.cwd
+		base = file.base
 		@push(file)
 		getDeps(path)
 
@@ -53,6 +55,6 @@ module.exports = (config) ->
 		# refresh cache
 		cache = depCache[path] = {}
 		for childPath in deps
-			@push(makeFile(childPath, type))
+			@push(makeFile(childPath, type, base, cwd))
 			cache[childPath] = 1
 		cb()
