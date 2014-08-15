@@ -9,7 +9,7 @@ module.exports = (extname) ->
 			skip: /-^\s*--.*/
 
 		when 'styl'
-			regexp: /^\s*@import\s+['"]?([^'"]+)['"]?/
+			regexp: /^\s*(?:@import|@require)\s+['"]?([^'"]+)['"]?/
 			exclusion: 'nib'
 
 		when 'less'

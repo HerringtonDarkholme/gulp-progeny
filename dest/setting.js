@@ -11,7 +11,7 @@ module.exports = function(extname) {
       };
     case 'styl':
       return {
-        regexp: /^\s*@import\s+['"]?([^'"]+)['"]?/,
+        regexp: /^\s*(?:@import|@require)\s+['"]?([^'"]+)['"]?/,
         exclusion: 'nib'
       };
     case 'less':
