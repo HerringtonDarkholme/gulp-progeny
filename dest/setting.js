@@ -27,5 +27,7 @@ module.exports = function(extname) {
         exclusion: /^compass/,
         extensionsList: ['scss', 'sass']
       };
+    default:
+      return {};
   }
 };

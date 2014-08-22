@@ -160,7 +160,7 @@ module.exports = function(_arg) {
       skip = setting.skip;
     }
     if (extensionsList == null) {
-      extensionsList = setting.exclusion || [];
+      extensionsList = setting.extensionsList || [];
     }
     parseDeps(path, depList);
     return depList;

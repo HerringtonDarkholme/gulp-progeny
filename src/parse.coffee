@@ -102,6 +102,6 @@ module.exports = ({skip, regexp, exclusion, extension, rootPath, prefix, extensi
 		prefix ?= setting.prefix
 		exclusion ?= setting.exclusion
 		skip ?= setting.skip
-		extensionsList ?= setting.exclusion or []
+		extensionsList ?= setting.extensionsList or []
 		parseDeps(path, depList)
 		depList
