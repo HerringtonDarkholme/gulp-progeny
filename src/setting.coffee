@@ -21,3 +21,5 @@ module.exports = (extname) ->
 			prefix: '_'
 			exclusion: /^compass/
 			extensionsList: ['scss', 'sass']
+		else
+			{}
