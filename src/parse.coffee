@@ -4,6 +4,7 @@ fs = require('fs')
 {Match, Is, parameter, wildcard} = require('pat-mat')
 $ = parameter
 _ = wildcard
+glob = require('glob')
 
 
 convertToGlobalRegExp = Match(
@@ -20,9 +21,24 @@ module.exports = ({skip, regexp, exclusion, extension, rootPath, prefix, extensi
 		skip = convertToGlobalRegExp(skip)
 		source.replace(skip, '')
 
-	extractDepString = (source) ->
+	extractDepString = (source, path) ->
 		regexp = convertToGlobalRegExp(regexp)
-		match[1] while (match = regexp.exec(source))
+		ret = []
+		splitReg = /['"]\s*,\s*['"]/
+		while (match = regexp.exec(source))
+			str = match[1]
+			if splitReg.test(str)
+				# handle sass multiple import
+				ret = ret.concat(str.split(splitReg))
+			else if /\*/.test(str)
+				# handle stylus file glob
+				ret = ret.concat(glob.sync(str, {
+					root: rootPath,
+					cwd: sysPath.dirname(path)
+				}))
+			else
+				ret.push(str)
+		ret
 
 	filterExclusion = (path) ->
 		isExcluded = Match(
@@ -80,7 +96,7 @@ module.exports = ({skip, regexp, exclusion, extension, rootPath, prefix, extensi
 		parentPath = sysPath.dirname(path) if path
 		source = fs.readFileSync(path, 'utf8')
 		source = stripComments(source)
-		deps = extractDepString(source)
+		deps = extractDepString(source, path)
 			.filter(filterExclusion)
 			.map(addExtension)
 			.map(normalizePath(parentPath))

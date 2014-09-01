@@ -126,3 +126,51 @@ describe 'gulp-progeny should', ->
 		stream.write(altFile)
 		stream.write(partialFile)
 		stream.write(partialFile)
+
+	it 'should handle stylus glob', ->
+		styl = path.join(__dirname, 'fixtures/test.styl')
+		aPath = path.join(__dirname, 'fixtures/styl/a.styl')
+		bPath = path.join(__dirname, 'fixtures/styl/b.styl')
+		stream = progeny()
+		i = a = b = t = 0
+		stream.on('data', (data)->
+			p = data.path
+			console.log(p)
+			i++
+			switch
+				when /a\.styl$/.test(p)
+					a++
+				when /b\.styl$/.test(p)
+					b++
+				when /test\.styl/.test(p)
+					t++
+		).on('end', ->
+			assert i == 7
+			assert a is 2
+			assert b is 2
+			assert t = 3
+		)
+		stylFile = new gutil.File({
+			base: path.dirname(styl)
+			cwd: __dirname
+			path: styl
+			contents: fs.readFileSync(styl)
+		})
+		aFile = new gutil.File({
+			base: path.dirname(styl)
+			cwd: __dirname
+			path: aPath
+			contents: fs.readFileSync(aPath)
+		})
+		bFile = new gutil.File({
+			base: path.dirname(styl)
+			cwd: __dirname
+			path: bPath
+			contents: fs.readFileSync(bPath)
+		})
+		stream.write(stylFile)
+		stream.write(aFile)
+		stream.write(aFile)
+		stream.write(bFile)
+		stream.write(bFile)
+		stream.end()

@@ -1,4 +1,4 @@
-var $, Is, Match, convertToGlobalRegExp, defaultSettings, fs, parameter, sysPath, wildcard, _, _ref,
+var $, Is, Match, convertToGlobalRegExp, defaultSettings, fs, glob, parameter, sysPath, wildcard, _, _ref,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 sysPath = require('path');
@@ -12,6 +12,8 @@ _ref = require('pat-mat'), Match = _ref.Match, Is = _ref.Is, parameter = _ref.pa
 $ = parameter;
 
 _ = wildcard;
+
+glob = require('glob');
 
 convertToGlobalRegExp = Match(Is({
   global: true,
@@ -34,14 +36,25 @@ module.exports = function(_arg) {
     skip = convertToGlobalRegExp(skip);
     return source.replace(skip, '');
   };
-  extractDepString = function(source) {
-    var match, _results;
+  extractDepString = function(source, path) {
+    var match, ret, splitReg, str;
     regexp = convertToGlobalRegExp(regexp);
-    _results = [];
+    ret = [];
+    splitReg = /['"]\s*,\s*['"]/;
     while ((match = regexp.exec(source))) {
-      _results.push(match[1]);
+      str = match[1];
+      if (splitReg.test(str)) {
+        ret = ret.concat(str.split(splitReg));
+      } else if (/\*/.test(str)) {
+        ret = ret.concat(glob.sync(str, {
+          root: rootPath,
+          cwd: sysPath.dirname(path)
+        }));
+      } else {
+        ret.push(str);
+      }
     }
-    return _results;
+    return ret;
   };
   filterExclusion = function(path) {
     var isExcluded;
@@ -127,7 +140,7 @@ module.exports = function(_arg) {
     }
     source = fs.readFileSync(path, 'utf8');
     source = stripComments(source);
-    deps = extractDepString(source).filter(filterExclusion).map(addExtension).map(normalizePath(parentPath));
+    deps = extractDepString(source, path).filter(filterExclusion).map(addExtension).map(normalizePath(parentPath));
     deps = normalizeExt(deps);
     deps = prefixify(deps);
     deps = alternateExtension(deps);

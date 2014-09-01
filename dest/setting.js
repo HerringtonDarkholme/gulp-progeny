@@ -11,7 +11,7 @@ module.exports = function(extname) {
       };
     case 'styl':
       return {
-        regexp: /^\s*(?:@import|@require)\s+['"]?([^'"]+)['"]?/,
+        regexp: /^\s*(?:@import|@require)\s+['"](.+?)['"](?:$|;)/,
         exclusion: 'nib'
       };
     case 'less':
@@ -22,7 +22,7 @@ module.exports = function(extname) {
     case 'sass':
       return {
         skip: /\/\*.+?\*\/|\/\/.*(?=[\n\r])/,
-        regexp: /^\s*@import\s+['"]?([^'"]+)['"]?/,
+        regexp: /(?=^\s*@import\s+.*?)['"]?(.+)['"]?(?:,|;|$)/,
         prefix: '_',
         exclusion: /^compass/,
         extensionsList: ['scss', 'sass']

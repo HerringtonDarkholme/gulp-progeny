@@ -9,7 +9,7 @@ module.exports = (extname) ->
 			skip: /-^\s*--.*/
 
 		when 'styl'
-			regexp: /^\s*(?:@import|@require)\s+['"]?([^'"]+)['"]?/
+			regexp: /^\s*(?:@import|@require)\s+['"](.+?)['"](?:$|;)/
 			exclusion: 'nib'
 
 		when 'less'
@@ -17,7 +17,7 @@ module.exports = (extname) ->
 
 		when 'scss', 'sass'
 			skip: /\/\*.+?\*\/|\/\/.*(?=[\n\r])/
-			regexp: /^\s*@import\s+['"]?([^'"]+)['"]?/
+			regexp: /(?=^\s*@import\s+.*?)['"]?(.+)['"]?(?:,|;|$)/
 			prefix: '_'
 			exclusion: /^compass/
 			extensionsList: ['scss', 'sass']
