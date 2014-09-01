@@ -71,3 +71,11 @@ var progeny = require('gulp-progeny')
 
 gulp.src('*.styl').pipe(progeny(progenyConfig))
 ```
+
+### changelog
+0.0.1 initial version
+0.0.2 fix `base` path in `gutil.File` to preserve directory structure
+0.0.3 fix stylus regexp
+0.0.4 add empty setting object for unsupported file type
+0.0.5 fix extensions list
+0.0.6 add `multiple import` for sass and `file glob` for stylus
