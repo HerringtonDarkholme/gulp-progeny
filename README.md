@@ -74,7 +74,9 @@ gulp.src('*.styl').pipe(progeny(progenyConfig))
 
 ### limitation
 Gulp-progeny, by the virtue of its design, has following limitations.
+
 1. Filenames must be static in source code. Otherwise regexp fails to work.
+
 2. Sass/Scss filenames should not contain apostrophes. This limitation is due toSass's [multiple import feature](http://sass-lang.com/documentation/file.SASS_REFERENCE.html#import). Matching filenames with `'"` is far beyond the reach of regular expressions with only one match, which is the format used in this plug in.
 
 Limitations above are almost ineluctable for this simple plugin. To keep API and extension simple and generic, some features are doomed to be dropped. This plugin does not fill the chasm between a single one Regexp and full-bloom parsers.
