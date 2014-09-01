@@ -27,6 +27,7 @@ module.exports = ({skip, regexp, exclusion, extension, rootPath, prefix, extensi
 		splitReg = /['"]\s*,\s*['"]/
 		while (match = regexp.exec(source))
 			str = match[1]
+			str = str.replace(/^['"]|['"]$/g, '')
 			if splitReg.test(str)
 				# handle sass multiple import
 				ret = ret.concat(str.split(splitReg))
