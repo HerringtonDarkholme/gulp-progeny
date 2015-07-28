@@ -79,7 +79,7 @@ module.exports = function(arg) {
     }
   };
   addDirectory = function(path) {
-    if (directoryEntry && '' === sysPath.extname(path) && fs.lstatSync(path).isDirectory()) {
+    if (directoryEntry && '' === sysPath.extname(path) && fs.existsSync(path) && fs.lstatSync(path).isDirectory()) {
       return path + '/' + directoryEntry;
     } else {
       return path;
