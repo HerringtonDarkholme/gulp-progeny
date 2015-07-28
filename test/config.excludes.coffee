@@ -27,7 +27,7 @@ describe 'progeny configuration', ->
 
 			dependencies = getDependencies getFixturePath('excludedDependencies.jade')
 			paths =  (getFixturePath x for x in ['excludedDependencyTwo.jade', 'includedDependencyOne.jade'])
-			assert.deepEqual(dependencies, paths)
+			assert.deepEqual dependencies, paths
 
 		it 'should accept one string', ->
 			progenyConfig.exclusion = 'excludedDependencyOne'

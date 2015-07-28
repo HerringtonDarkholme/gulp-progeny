@@ -135,7 +135,6 @@ describe 'gulp-progeny should', ->
 		i = a = b = t = 0
 		stream.on('data', (data)->
 			p = data.path
-			console.log(p)
 			i++
 			switch
 				when /a\.styl$/.test(p)

@@ -59,6 +59,7 @@ module.exports = ({skip, regexp, exclusion, extension, rootPath, prefix, extensi
 		if (
 			directoryEntry and
 			'' is sysPath.extname(path) and
+			fs.existsSync(path) and
 			fs.lstatSync(path).isDirectory()
 		)
 			path + '/' + directoryEntry
@@ -109,9 +110,9 @@ module.exports = ({skip, regexp, exclusion, extension, rootPath, prefix, extensi
 		source = stripComments(source)
 		deps = extractDepString(source, path)
 			.filter(filterExclusion)
+			.map(normalizePath(parentPath))
 			.map(addDirectory)
 			.map(addExtension)
-			.map(normalizePath(parentPath))
 		deps = normalizeExt(deps)
 		deps = prefixify(deps)
 		deps = alternateExtension(deps)

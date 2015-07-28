@@ -64,6 +64,11 @@ var progenyConfig = {
     // Matched stuff to exclude: string, regex, or array of either/both
     exclusion: /^compass/,
 
+	// which file to find when import directory as a whole
+	// don't include extension here
+	// e.g. @import 'blueprint' is expanded to @import 'blueprint/index.styl'
+	directoryEntry: 'index',
+
     // In case a match starts with a slash, the absolute path to apply
     rootPath: path.join('path', 'to', 'project')
 };
@@ -95,3 +100,5 @@ Limitations above are almost ineluctable for this simple plugin. To keep API and
 0.0.6 add `multiple import` for sass and `file glob` for stylus
 
 0.0.7 drop support for apostroph
+
+0.0.8 add support for index styles
