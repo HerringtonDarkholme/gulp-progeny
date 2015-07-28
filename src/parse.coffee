@@ -13,7 +13,7 @@ convertToGlobalRegExp = Match(
 )
 
 
-module.exports = ({skip, regexp, exclusion, extension, rootPath, prefix, extensionsList} = {}) ->
+module.exports = ({skip, regexp, exclusion, extension, rootPath, prefix, extensionsList, directoryEntry} = {}) ->
 
 	stripComments = (source) ->
 		if !skip
@@ -54,6 +54,17 @@ module.exports = ({skip, regexp, exclusion, extension, rootPath, prefix, extensi
 			path + '.' + extension
 		else
 			path
+
+	addDirectory = (path) ->
+		if (
+			directoryEntry and
+			'' is sysPath.extname(path) and
+			fs.lstatSync(path).isDirectory()
+		)
+			path + '/' + directoryEntry
+		else
+			path
+
 
 	normalizePath = (parentPath) -> (path) ->
 		if path[0] is '/' or not parentPath
@@ -98,6 +109,7 @@ module.exports = ({skip, regexp, exclusion, extension, rootPath, prefix, extensi
 		source = stripComments(source)
 		deps = extractDepString(source, path)
 			.filter(filterExclusion)
+			.map(addDirectory)
 			.map(addExtension)
 			.map(normalizePath(parentPath))
 		deps = normalizeExt(deps)
@@ -119,5 +131,6 @@ module.exports = ({skip, regexp, exclusion, extension, rootPath, prefix, extensi
 		exclusion ?= setting.exclusion
 		skip ?= setting.skip
 		extensionsList ?= setting.extensionsList or []
+		directoryEntry ?= setting.directoryEntry
 		parseDeps(path, depList)
 		depList

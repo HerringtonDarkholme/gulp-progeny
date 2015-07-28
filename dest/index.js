@@ -46,13 +46,13 @@ module.exports = function(config) {
   var getDeps;
   getDeps = initParseConfig(config);
   return through.obj(function(file, enc, cb) {
-    var base, cache, childPath, cwd, deps, path, type, _i, _len, _ref;
+    var base, cache, childPath, cwd, deps, i, len, path, ref, type;
     if (file.isNull()) {
       this.push(file);
       return cb();
     }
     path = file.path;
-    type = (_ref = file.isStream()) != null ? _ref : {
+    type = (ref = file.isStream()) != null ? ref : {
       'stream': 'buffer'
     };
     cwd = file.cwd;
@@ -66,8 +66,8 @@ module.exports = function(config) {
     cache = (depCache[path] != null ? depCache[path] : depCache[path] = {});
     deps = Object.keys(cache).filter(fs.existsSync);
     cache = depCache[path] = {};
-    for (_i = 0, _len = deps.length; _i < _len; _i++) {
-      childPath = deps[_i];
+    for (i = 0, len = deps.length; i < len; i++) {
+      childPath = deps[i];
       this.push(makeFile(childPath, type, base, cwd));
       cache[childPath] = 1;
     }

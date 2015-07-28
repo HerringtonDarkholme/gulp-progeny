@@ -1,5 +1,5 @@
-var $, Is, Match, convertToGlobalRegExp, defaultSettings, fs, glob, parameter, sysPath, wildcard, _, _ref,
-  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+var $, Is, Match, _, convertToGlobalRegExp, defaultSettings, fs, glob, parameter, ref, sysPath, wildcard,
+  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 sysPath = require('path');
 
@@ -7,7 +7,7 @@ defaultSettings = require('./setting');
 
 fs = require('fs');
 
-_ref = require('pat-mat'), Match = _ref.Match, Is = _ref.Is, parameter = _ref.parameter, wildcard = _ref.wildcard;
+ref = require('pat-mat'), Match = ref.Match, Is = ref.Is, parameter = ref.parameter, wildcard = ref.wildcard;
 
 $ = parameter;
 
@@ -26,9 +26,9 @@ convertToGlobalRegExp = Match(Is({
   return new RegExp(s, 'mg');
 }));
 
-module.exports = function(_arg) {
-  var addExtension, alternateExtension, exclusion, extension, extensionsList, extractDepString, filterExclusion, normalizeExt, normalizePath, parseDeps, prefix, prefixify, regexp, rootPath, skip, stripComments, _ref1;
-  _ref1 = _arg != null ? _arg : {}, skip = _ref1.skip, regexp = _ref1.regexp, exclusion = _ref1.exclusion, extension = _ref1.extension, rootPath = _ref1.rootPath, prefix = _ref1.prefix, extensionsList = _ref1.extensionsList;
+module.exports = function(arg) {
+  var addDirectory, addExtension, alternateExtension, directoryEntry, exclusion, extension, extensionsList, extractDepString, filterExclusion, normalizeExt, normalizePath, parseDeps, prefix, prefixify, ref1, regexp, rootPath, skip, stripComments;
+  ref1 = arg != null ? arg : {}, skip = ref1.skip, regexp = ref1.regexp, exclusion = ref1.exclusion, extension = ref1.extension, rootPath = ref1.rootPath, prefix = ref1.prefix, extensionsList = ref1.extensionsList, directoryEntry = ref1.directoryEntry;
   stripComments = function(source) {
     if (!skip) {
       return source;
@@ -74,6 +74,13 @@ module.exports = function(_arg) {
   addExtension = function(path) {
     if (extension && '' === sysPath.extname(path)) {
       return path + '.' + extension;
+    } else {
+      return path;
+    }
+  };
+  addDirectory = function(path) {
+    if (directoryEntry && '' === sysPath.extname(path) && fs.lstatSync(path).isDirectory()) {
+      return path + '/' + directoryEntry;
     } else {
       return path;
     }
@@ -140,12 +147,12 @@ module.exports = function(_arg) {
     }
     source = fs.readFileSync(path, 'utf8');
     source = stripComments(source);
-    deps = extractDepString(source, path).filter(filterExclusion).map(addExtension).map(normalizePath(parentPath));
+    deps = extractDepString(source, path).filter(filterExclusion).map(addDirectory).map(addExtension).map(normalizePath(parentPath));
     deps = normalizeExt(deps);
     deps = prefixify(deps);
     deps = alternateExtension(deps);
     return deps.forEach(function(childPath) {
-      if (!(__indexOf.call(parsedList, childPath) >= 0)) {
+      if (!(indexOf.call(parsedList, childPath) >= 0)) {
         parsedList.push(childPath);
         if (fs.existsSync(childPath)) {
           return parseDeps(childPath, parsedList);
@@ -174,6 +181,9 @@ module.exports = function(_arg) {
     }
     if (extensionsList == null) {
       extensionsList = setting.extensionsList || [];
+    }
+    if (directoryEntry == null) {
+      directoryEntry = setting.directoryEntry;
     }
     parseDeps(path, depList);
     return depList;

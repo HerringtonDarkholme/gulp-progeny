@@ -10,6 +10,7 @@ module.exports = (extname) ->
 
 		when 'styl'
 			regexp: /^\s*(?:@import|@require)\s+['"](.+?)['"](?:$|;)/
+			directoryEntry: 'index'
 			exclusion: 'nib'
 
 		when 'less'
