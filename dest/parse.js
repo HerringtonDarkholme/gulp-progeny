@@ -1,4 +1,4 @@
-var $, Is, Match, _, convertToGlobalRegExp, defaultSettings, fs, glob, parameter, ref, sysPath, wildcard,
+var $, Is, Match, _, convertToGlobalRegExp, debugDep, defaultSettings, fs, glob, parameter, ref, sysPath, wildcard,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 sysPath = require('path');
@@ -15,6 +15,8 @@ _ = wildcard;
 
 glob = require('glob');
 
+debugDep = require('./util');
+
 convertToGlobalRegExp = Match(Is({
   global: true,
   multiline: true
@@ -27,8 +29,8 @@ convertToGlobalRegExp = Match(Is({
 }));
 
 module.exports = function(arg) {
-  var addDirectory, addExtension, alternateExtension, directoryEntry, exclusion, extension, extensionsList, extractDepString, filterExclusion, normalizeExt, normalizePath, parseDeps, prefix, prefixify, ref1, regexp, rootPath, skip, stripComments;
-  ref1 = arg != null ? arg : {}, skip = ref1.skip, regexp = ref1.regexp, exclusion = ref1.exclusion, extension = ref1.extension, rootPath = ref1.rootPath, prefix = ref1.prefix, extensionsList = ref1.extensionsList, directoryEntry = ref1.directoryEntry;
+  var addDirectory, addExtension, alternateExtension, debug, directoryEntry, exclusion, extension, extensionsList, extractDepString, filterExclusion, normalizeExt, normalizePath, parseDeps, prefix, prefixify, ref1, regexp, rootPath, skip, stripComments;
+  ref1 = arg != null ? arg : {}, skip = ref1.skip, regexp = ref1.regexp, exclusion = ref1.exclusion, extension = ref1.extension, rootPath = ref1.rootPath, prefix = ref1.prefix, extensionsList = ref1.extensionsList, directoryEntry = ref1.directoryEntry, debug = ref1.debug;
   stripComments = function(source) {
     if (!skip) {
       return source;
@@ -186,6 +188,9 @@ module.exports = function(arg) {
       directoryEntry = setting.directoryEntry;
     }
     parseDeps(path, depList);
+    if (debug) {
+      debugDep(path, depList);
+    }
     return depList;
   };
 };

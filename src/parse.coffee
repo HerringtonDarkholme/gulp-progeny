@@ -5,6 +5,7 @@ fs = require('fs')
 $ = parameter
 _ = wildcard
 glob = require('glob')
+debugDep = require('./util')
 
 
 convertToGlobalRegExp = Match(
@@ -13,7 +14,7 @@ convertToGlobalRegExp = Match(
 )
 
 
-module.exports = ({skip, regexp, exclusion, extension, rootPath, prefix, extensionsList, directoryEntry} = {}) ->
+module.exports = ({skip, regexp, exclusion, extension, rootPath, prefix, extensionsList, directoryEntry, debug} = {}) ->
 
 	stripComments = (source) ->
 		if !skip
@@ -134,4 +135,6 @@ module.exports = ({skip, regexp, exclusion, extension, rootPath, prefix, extensi
 		extensionsList ?= setting.extensionsList or []
 		directoryEntry ?= setting.directoryEntry
 		parseDeps(path, depList)
+		if (debug)
+			debugDep(path, depList)
 		depList

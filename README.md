@@ -64,13 +64,16 @@ var progenyConfig = {
     // Matched stuff to exclude: string, regex, or array of either/both
     exclusion: /^compass/,
 
-	// which file to find when import directory as a whole
-	// don't include extension here
-	// e.g. @import 'blueprint' is expanded to @import 'blueprint/index.styl'
-	directoryEntry: 'index',
+    // which file to find when import directory as a whole
+    // don't include extension here
+    // e.g. @import 'blueprint' is expanded to @import 'blueprint/index.styl'
+    directoryEntry: 'index',
 
     // In case a match starts with a slash, the absolute path to apply
-    rootPath: path.join('path', 'to', 'project')
+    rootPath: path.join('path', 'to', 'project'),
+
+    // all dependencies will be printed out in debug mode
+    debug: true
 };
 var progeny = require('gulp-progeny')
 
