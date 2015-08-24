@@ -33,6 +33,11 @@ initParseConfig = function(config) {
   var parser;
   parser = progeny(config);
   return function(path) {
+    Object.keys(depCache).forEach(function(key) {
+      if (path in depCache[key]) {
+        return delete depCache[key][path];
+      }
+    });
     return parser(path).filter(fs.existsSync).forEach(function(dep) {
       if (depCache[dep] == null) {
         depCache[dep] = {};

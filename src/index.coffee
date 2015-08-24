@@ -23,6 +23,10 @@ makeFile = (path, type, base, cwd) ->
 initParseConfig = (config) ->
 	parser = progeny(config)
 	(path) ->
+		# clear old dependencies
+		Object.keys(depCache).forEach (key) ->
+			if path of depCache[key]
+				delete depCache[key][path]
 		parser(path)
 			.filter(fs.existsSync)
 			.forEach((dep) ->

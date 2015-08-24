@@ -91,7 +91,7 @@ describe 'gulp-progeny should', ->
 	# 	stream.write(altFile)
 	# 	stream.write(altFile)
 
-	it 'should deeply watch', ->
+	it 'should deeply watch', (done) ->
 		i = 0
 		test = ->
 			switch i
@@ -121,13 +121,15 @@ describe 'gulp-progeny should', ->
 				else
 					assert false
 		stream = prepareTestStream(test)
+		stream.on('end', -> done())
 		stream.write(testFile)
 		stream.write(altFile)
 		stream.write(altFile)
 		stream.write(partialFile)
 		stream.write(partialFile)
+		stream.end()
 
-	it 'should handle stylus glob', ->
+	it 'should handle stylus glob', (done) ->
 		styl = path.join(__dirname, 'fixtures/test.styl')
 		aPath = path.join(__dirname, 'fixtures/styl/a.styl')
 		bPath = path.join(__dirname, 'fixtures/styl/b.styl')
@@ -148,6 +150,7 @@ describe 'gulp-progeny should', ->
 			assert a is 2
 			assert b is 2
 			assert t = 3
+			done()
 		)
 		stylFile = new gutil.File({
 			base: path.dirname(styl)
@@ -172,4 +175,64 @@ describe 'gulp-progeny should', ->
 		stream.write(aFile)
 		stream.write(bFile)
 		stream.write(bFile)
+		stream.end()
+
+parentPath = path.join(__dirname, 'fixtures/parent.test')
+childPath = path.join(__dirname, 'fixtures/child.test')
+parentFile = new gutil.File({
+	base: path.dirname(parentPath)
+	cwd: __dirname
+	path: parentPath
+	contents: fs.readFileSync(parentPath)
+})
+fs.writeFileSync(childPath, 'import parent.test')
+childFile = new gutil.File({
+	base: path.dirname(childPath)
+	cwd: __dirname
+	path: childPath
+	contents: fs.readFileSync(childPath)
+})
+
+describe 'gulp progeny should clean previous dep', ->
+	it 'should track dep', (done) ->
+		stream = progeny(regexp: /import (.*)/)
+		parentCount = 0
+		childCount = 0
+		stream.on('data', (data)->
+			p = data.path
+			switch
+				when /parent\.test$/.test(p)
+					parentCount++
+				when /child\.test$/.test(p)
+					childCount++
+			[expectedParentCount, expectedChildCount] = expectedCount.shift()
+			if expectedChildCount == 3
+				# hardcode a child path
+				fs.writeFileSync(childPath, '')
+			assert expectedParentCount == parentCount
+			assert expectedChildCount == childCount
+		).on('end', -> done())
+
+		expectedCount = [
+			[1, 0] #first
+			[1, 1] #first
+			[1, 2] #send child
+			[2, 2] #send parent
+			[2, 3] #send parent
+			[2, 4] #change child
+			[3, 4] #send parent again
+			[-1, -1] # should not go here
+		]
+		# first time
+		stream.write(parentFile)
+		stream.write(childFile)
+
+		# send child should not influence parent
+		stream.write(childFile)
+		# send parent again
+		stream.write(parentFile)
+		# change child
+		stream.write(childFile)
+		# send parent again should not update child
+		stream.write(parentFile)
 		stream.end()
