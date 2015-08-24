@@ -105,3 +105,5 @@ Limitations above are almost ineluctable for this simple plugin. To keep API and
 0.0.7 drop support for apostroph
 
 0.0.8 add support for index styles
+
+0.1.1 add dependencies removal
