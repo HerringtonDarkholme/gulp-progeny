@@ -105,7 +105,7 @@ module.exports = ({skip, regexp, exclusion, extension, rootPath, prefix, extensi
 					altExts.push(sysPath.join(dir, base + '.' + ext))
 		depList.concat(altExts)
 
-	parseDeps = (path, parsedList) ->
+	parseDeps = (path, parsedList, shallowDep) ->
 		parentPath = sysPath.dirname(path) if path
 		source = fs.readFileSync(path, 'utf8')
 		source = stripComments(source)
@@ -121,10 +121,12 @@ module.exports = ({skip, regexp, exclusion, extension, rootPath, prefix, extensi
 		deps.forEach (childPath) ->
 			if not (childPath in parsedList)
 				parsedList.push(childPath)
-				if (fs.existsSync(childPath))
+				if shallowDep
+					return
+				if fs.existsSync(childPath)
 					parseDeps(childPath, parsedList)
 
-	(path) ->
+	(path, shallowDep) ->
 		depList = []
 		extension ?= sysPath.extname(path)[1...]
 		setting = defaultSettings(extension)
@@ -134,7 +136,7 @@ module.exports = ({skip, regexp, exclusion, extension, rootPath, prefix, extensi
 		skip ?= setting.skip
 		extensionsList ?= setting.extensionsList or []
 		directoryEntry ?= setting.directoryEntry
-		parseDeps(path, depList)
-		if (debug)
+		parseDeps(path, depList, shallowDep)
+		if debug
 			debugDep(path, depList)
 		depList

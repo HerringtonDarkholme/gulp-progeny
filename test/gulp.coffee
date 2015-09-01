@@ -32,7 +32,7 @@ partialFile = new gutil.File({
 testCount = altCount = partialCount = 0
 
 prepareTestStream = (testFunc) ->
-	stream = progeny()
+	stream = progeny(debug: false)
 	testCount = altCount = partialCount = 0
 	stream.on('data', (data)->
 		p = data.path
@@ -43,6 +43,7 @@ prepareTestStream = (testFunc) ->
 				altCount++
 			when /htmlPartial\.html$/.test(p)
 				partialCount++
+		console.log(p)
 		testFunc()
 	)
 	stream
@@ -114,10 +115,10 @@ describe 'gulp-progeny should', ->
 					assert partialCount is 2
 					i++
 				when 6
-					assert testCount is 3
+					assert altCount is 3
 					i++
 				when 7
-					assert altCount is 3
+					assert testCount is 3
 				else
 					assert false
 		stream = prepareTestStream(test)

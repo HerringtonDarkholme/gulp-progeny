@@ -27,12 +27,22 @@ initParseConfig = (config) ->
 		Object.keys(depCache).forEach (key) ->
 			if path of depCache[key]
 				delete depCache[key][path]
-		parser(path)
+		parser(path, true)
 			.filter(fs.existsSync)
 			.forEach((dep) ->
 				depCache[dep] ?= {}
 				depCache[dep][path] = 1
 			)
+
+pushFileRecursive = (fileSet, path) ->
+	cache = (depCache[path] ?= {})
+	# refresh cache
+	for childPath of cache
+		if !fs.existsSync(childPath)
+			delete cache[child]
+		else
+			fileSet[childPath] = 1
+			pushFileRecursive(fileSet, childPath)
 
 module.exports = (config) ->
 	getDeps = initParseConfig(config)
@@ -52,13 +62,8 @@ module.exports = (config) ->
 		if !processedFileNames[path]
 			processedFileNames[path] = 1
 			return cb()
-
-		cache = (depCache[path] ?= {})
-		deps = Object.keys(cache)
-			.filter(fs.existsSync)
-		# refresh cache
-		cache = depCache[path] = {}
-		for childPath in deps
+		fileSet = {}
+		pushFileRecursive(fileSet, path)
+		for childPath of fileSet
 			@push(makeFile(childPath, type, base, cwd))
-			cache[childPath] = 1
 		cb()

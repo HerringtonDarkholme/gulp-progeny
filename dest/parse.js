@@ -142,7 +142,7 @@ module.exports = function(arg) {
     });
     return depList.concat(altExts);
   };
-  parseDeps = function(path, parsedList) {
+  parseDeps = function(path, parsedList, shallowDep) {
     var deps, parentPath, source;
     if (path) {
       parentPath = sysPath.dirname(path);
@@ -156,13 +156,16 @@ module.exports = function(arg) {
     return deps.forEach(function(childPath) {
       if (!(indexOf.call(parsedList, childPath) >= 0)) {
         parsedList.push(childPath);
+        if (shallowDep) {
+          return;
+        }
         if (fs.existsSync(childPath)) {
           return parseDeps(childPath, parsedList);
         }
       }
     });
   };
-  return function(path) {
+  return function(path, shallowDep) {
     var depList, setting;
     depList = [];
     if (extension == null) {
@@ -187,7 +190,7 @@ module.exports = function(arg) {
     if (directoryEntry == null) {
       directoryEntry = setting.directoryEntry;
     }
-    parseDeps(path, depList);
+    parseDeps(path, depList, shallowDep);
     if (debug) {
       debugDep(path, depList);
     }

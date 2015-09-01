@@ -1,4 +1,4 @@
-var depCache, fs, gutil, initParseConfig, makeFile, processedFileNames, progeny, sysPath, through;
+var depCache, fs, gutil, initParseConfig, makeFile, processedFileNames, progeny, pushFileRecursive, sysPath, through;
 
 gutil = require('gulp-util');
 
@@ -38,7 +38,7 @@ initParseConfig = function(config) {
         return delete depCache[key][path];
       }
     });
-    return parser(path).filter(fs.existsSync).forEach(function(dep) {
+    return parser(path, true).filter(fs.existsSync).forEach(function(dep) {
       if (depCache[dep] == null) {
         depCache[dep] = {};
       }
@@ -47,11 +47,26 @@ initParseConfig = function(config) {
   };
 };
 
+pushFileRecursive = function(fileSet, path) {
+  var cache, childPath, results;
+  cache = (depCache[path] != null ? depCache[path] : depCache[path] = {});
+  results = [];
+  for (childPath in cache) {
+    if (!fs.existsSync(childPath)) {
+      results.push(delete cache[child]);
+    } else {
+      fileSet[childPath] = 1;
+      results.push(pushFileRecursive(fileSet, childPath));
+    }
+  }
+  return results;
+};
+
 module.exports = function(config) {
   var getDeps;
   getDeps = initParseConfig(config);
   return through.obj(function(file, enc, cb) {
-    var base, cache, childPath, cwd, deps, i, len, path, ref, type;
+    var base, childPath, cwd, fileSet, path, ref, type;
     if (file.isNull()) {
       this.push(file);
       return cb();
@@ -68,13 +83,10 @@ module.exports = function(config) {
       processedFileNames[path] = 1;
       return cb();
     }
-    cache = (depCache[path] != null ? depCache[path] : depCache[path] = {});
-    deps = Object.keys(cache).filter(fs.existsSync);
-    cache = depCache[path] = {};
-    for (i = 0, len = deps.length; i < len; i++) {
-      childPath = deps[i];
+    fileSet = {};
+    pushFileRecursive(fileSet, path);
+    for (childPath in fileSet) {
       this.push(makeFile(childPath, type, base, cwd));
-      cache[childPath] = 1;
     }
     return cb();
   });
