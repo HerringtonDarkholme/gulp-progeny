@@ -43,7 +43,6 @@ prepareTestStream = (testFunc) ->
 				altCount++
 			when /htmlPartial\.html$/.test(p)
 				partialCount++
-		console.log(p)
 		testFunc()
 	)
 	stream
