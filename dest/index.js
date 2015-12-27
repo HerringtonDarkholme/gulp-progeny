@@ -19,7 +19,8 @@ makeFile = function(path, type, base, cwd) {
   file = new gutil.File({
     base: base,
     cwd: cwd,
-    path: path
+    path: path,
+    stat: fs.statSync(path)
   });
   if (type === 'stream') {
     file.contents = fs.createReadStream(path);

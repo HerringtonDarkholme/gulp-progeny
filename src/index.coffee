@@ -12,6 +12,7 @@ makeFile = (path, type, base, cwd) ->
 		base: base
 		cwd: cwd
 		path: path
+		stat: fs.statSync(path)
 	})
 	if type is 'stream'
 		file.contents = fs.createReadStream(path)
