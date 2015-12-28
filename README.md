@@ -1,4 +1,4 @@
-gulp-progeny
+gulp-progeny [![Build Status](https://travis-ci.org/HerringtonDarkholme/gulp-progeny.svg?branch=master)](https://travis-ci.org/HerringtonDarkholme/gulp-progeny)
 ===============
 A dependency-resolving plugin for gulp.
 It grabs all files related to one edition to building system.
@@ -107,3 +107,5 @@ Limitations above are almost ineluctable for this simple plugin. To keep API and
 0.0.8 add support for index styles
 
 0.1.1 add dependencies removal
+
+0.2.0 add file.stats for other plugins
