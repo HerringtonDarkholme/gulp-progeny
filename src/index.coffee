@@ -40,7 +40,7 @@ pushFileRecursive = (fileSet, path) ->
 	# refresh cache
 	for childPath of cache
 		if !fs.existsSync(childPath)
-			delete cache[child]
+			delete cache[childPath]
 		else
 			fileSet[childPath] = 1
 			pushFileRecursive(fileSet, childPath)

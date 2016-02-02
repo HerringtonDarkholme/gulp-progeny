@@ -54,7 +54,7 @@ pushFileRecursive = function(fileSet, path) {
   results = [];
   for (childPath in cache) {
     if (!fs.existsSync(childPath)) {
-      results.push(delete cache[child]);
+      results.push(delete cache[childPath]);
     } else {
       fileSet[childPath] = 1;
       results.push(pushFileRecursive(fileSet, childPath));
