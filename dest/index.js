@@ -1,4 +1,4 @@
-var depCache, fs, gutil, initParseConfig, makeFile, processedFileNames, progeny, pushFileRecursive, sysPath, through;
+var fs, gutil, initParseConfig, makeFile, plugin, progeny, pushFileRecursive, sysPath, through;
 
 gutil = require('gulp-util');
 
@@ -9,10 +9,6 @@ sysPath = require('path');
 fs = require('fs');
 
 progeny = require('./parse');
-
-depCache = {};
-
-processedFileNames = {};
 
 makeFile = function(path, type, base, cwd) {
   var file;
@@ -34,23 +30,24 @@ initParseConfig = function(config) {
   var parser;
   parser = progeny(config);
   return function(path) {
-    Object.keys(depCache).forEach(function(key) {
-      if (path in depCache[key]) {
-        return delete depCache[key][path];
+    Object.keys(plugin.depCache).forEach(function(key) {
+      if (path in plugin.depCache[key]) {
+        return delete plugin.depCache[key][path];
       }
     });
     return parser(path, true).filter(fs.existsSync).forEach(function(dep) {
-      if (depCache[dep] == null) {
-        depCache[dep] = {};
+      var base1;
+      if ((base1 = plugin.depCache)[dep] == null) {
+        base1[dep] = {};
       }
-      return depCache[dep][path] = 1;
+      return plugin.depCache[dep][path] = 1;
     });
   };
 };
 
 pushFileRecursive = function(fileSet, path) {
-  var cache, childPath, results;
-  cache = (depCache[path] != null ? depCache[path] : depCache[path] = {});
+  var base1, cache, childPath, results;
+  cache = ((base1 = plugin.depCache)[path] != null ? base1[path] : base1[path] = {});
   results = [];
   for (childPath in cache) {
     if (!fs.existsSync(childPath)) {
@@ -63,7 +60,7 @@ pushFileRecursive = function(fileSet, path) {
   return results;
 };
 
-module.exports = function(config) {
+plugin = function(config) {
   var getDeps;
   getDeps = initParseConfig(config);
   return through.obj(function(file, enc, cb) {
@@ -80,8 +77,8 @@ module.exports = function(config) {
     base = file.base;
     this.push(file);
     getDeps(path);
-    if (!processedFileNames[path]) {
-      processedFileNames[path] = 1;
+    if (!plugin.processedFileNames[path]) {
+      plugin.processedFileNames[path] = 1;
       return cb();
     }
     fileSet = {};
@@ -92,3 +89,9 @@ module.exports = function(config) {
     return cb();
   });
 };
+
+plugin.depCache = {};
+
+plugin.processedFileNames = {};
+
+module.exports = plugin;
