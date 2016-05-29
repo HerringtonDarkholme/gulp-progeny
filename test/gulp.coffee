@@ -4,9 +4,9 @@ progeny = require('../dest/index')
 fs = require('fs')
 assert = require('assert')
 
-testPath = path.join(__dirname, 'fixtures/test.jade')
-altPath = path.join(__dirname, 'fixtures/altExtensions.jade')
-partialPath = path.join(__dirname, 'fixtures/htmlPartial.html')
+testPath = path.join(__dirname, 'fixtures', 'test.jade')
+altPath = path.join(__dirname, 'fixtures', 'altExtensions.jade')
+partialPath = path.join(__dirname, 'fixtures', 'htmlPartial.html')
 
 testFile = new gutil.File({
 	base: path.dirname(testPath)
@@ -130,9 +130,9 @@ describe 'gulp-progeny should', ->
 		stream.end()
 
 	it 'should handle stylus glob', (done) ->
-		styl = path.join(__dirname, 'fixtures/test.styl')
-		aPath = path.join(__dirname, 'fixtures/styl/a.styl')
-		bPath = path.join(__dirname, 'fixtures/styl/b.styl')
+		styl = path.join(__dirname, 'fixtures', 'test.styl')
+		aPath = path.join(__dirname, 'fixtures', 'styl', 'a.styl')
+		bPath = path.join(__dirname, 'fixtures', 'styl', 'b.styl')
 		stream = progeny()
 		i = a = b = t = 0
 		stream.on('data', (data)->
@@ -177,8 +177,8 @@ describe 'gulp-progeny should', ->
 		stream.write(bFile)
 		stream.end()
 
-parentPath = path.join(__dirname, 'fixtures/parent.test')
-childPath = path.join(__dirname, 'fixtures/child.test')
+parentPath = path.join(__dirname, 'fixtures', 'parent.test')
+childPath = path.join(__dirname, 'fixtures', 'child.test')
 parentFile = new gutil.File({
 	base: path.dirname(parentPath)
 	cwd: __dirname
