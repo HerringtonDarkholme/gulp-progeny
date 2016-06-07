@@ -17,7 +17,7 @@ module.exports = function(extname) {
       };
     case 'less':
       return {
-        regexp: /^\s*@import\s+['"]([^'"]+)['"]/
+        regexp: /^\s*@import\s*(?:\(\w+\)\s*)?(?:(?:url\()?['"]([^'"]+)['"])/
       };
     case 'scss':
     case 'sass':

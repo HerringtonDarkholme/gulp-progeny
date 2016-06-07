@@ -14,7 +14,7 @@ module.exports = (extname) ->
 			exclusion: 'nib'
 
 		when 'less'
-			regexp: /^\s*@import\s+['"]([^'"]+)['"]/
+			regexp: /^\s*@import\s*(?:\(\w+\)\s*)?(?:(?:url\()?['"]([^'"]+)['"])/
 
 		when 'scss', 'sass'
 			skip: /\/\*.+?\*\/|\/\/.*(?=[\n\r])/
