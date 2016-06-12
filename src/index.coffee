@@ -2,7 +2,7 @@ gutil = require('gulp-util')
 through = require('through2')
 sysPath = require('path')
 fs = require('fs')
-progeny = require('./parse')
+progeny = require('progeny')
 
 depCache = {}
 processedFileNames = {}
@@ -23,17 +23,20 @@ makeFile = (path, type, base, cwd) ->
 
 initParseConfig = (config) ->
 	parser = progeny(config)
-	(path) ->
+	(path, cb) ->
 		# clear old dependencies
 		Object.keys(depCache).forEach (key) ->
 			if path of depCache[key]
 				delete depCache[key][path]
-		parser(path, true)
-			.filter(fs.existsSync)
-			.forEach((dep) ->
-				depCache[dep] ?= {}
-				depCache[dep][path] = 1
-			)
+
+		parser path, (err, deps) ->
+			deps = deps.filter(fs.existsSync)
+			deps.forEach((dep) ->
+					depCache[dep] ?= {}
+					depCache[dep][path] = 1
+				)
+
+			cb()
 
 pushFileRecursive = (fileSet, path) ->
 	cache = (depCache[path] ?= {})
@@ -48,6 +51,8 @@ pushFileRecursive = (fileSet, path) ->
 module.exports = (config) ->
 	getDeps = initParseConfig(config)
 	return through.obj (file, enc, cb) ->
+		self = this
+
 		if file.isNull()
 			@push(file)
 			return cb()
@@ -57,14 +62,16 @@ module.exports = (config) ->
 		cwd = file.cwd
 		base = file.base
 		@push(file)
-		getDeps(path)
 
-		# do nothing when start up
-		if !processedFileNames[path]
-			processedFileNames[path] = 1
-			return cb()
-		fileSet = {}
-		pushFileRecursive(fileSet, path)
-		for childPath of fileSet
-			@push(makeFile(childPath, type, base, cwd))
-		cb()
+		onDepsParsed = ->
+			# do nothing when start up
+			if !processedFileNames[path]
+				processedFileNames[path] = 1
+				return cb()
+			fileSet = {}
+			pushFileRecursive(fileSet, path)
+			for childPath of fileSet
+				self.push(makeFile(childPath, type, base, cwd))
+			cb()
+
+		getDeps path, onDepsParsed

@@ -8,7 +8,7 @@ sysPath = require('path');
 
 fs = require('fs');
 
-progeny = require('./parse');
+progeny = require('progeny');
 
 depCache = {};
 
@@ -33,17 +33,21 @@ makeFile = function(path, type, base, cwd) {
 initParseConfig = function(config) {
   var parser;
   parser = progeny(config);
-  return function(path) {
+  return function(path, cb) {
     Object.keys(depCache).forEach(function(key) {
       if (path in depCache[key]) {
         return delete depCache[key][path];
       }
     });
-    return parser(path, true).filter(fs.existsSync).forEach(function(dep) {
-      if (depCache[dep] == null) {
-        depCache[dep] = {};
-      }
-      return depCache[dep][path] = 1;
+    return parser(path, function(err, deps) {
+      deps = deps.filter(fs.existsSync);
+      deps.forEach(function(dep) {
+        if (depCache[dep] == null) {
+          depCache[dep] = {};
+        }
+        return depCache[dep][path] = 1;
+      });
+      return cb();
     });
   };
 };
@@ -67,7 +71,8 @@ module.exports = function(config) {
   var getDeps;
   getDeps = initParseConfig(config);
   return through.obj(function(file, enc, cb) {
-    var base, childPath, cwd, fileSet, path, ref, type;
+    var base, cwd, onDepsParsed, path, ref, self, type;
+    self = this;
     if (file.isNull()) {
       this.push(file);
       return cb();
@@ -79,16 +84,19 @@ module.exports = function(config) {
     cwd = file.cwd;
     base = file.base;
     this.push(file);
-    getDeps(path);
-    if (!processedFileNames[path]) {
-      processedFileNames[path] = 1;
+    onDepsParsed = function() {
+      var childPath, fileSet;
+      if (!processedFileNames[path]) {
+        processedFileNames[path] = 1;
+        return cb();
+      }
+      fileSet = {};
+      pushFileRecursive(fileSet, path);
+      for (childPath in fileSet) {
+        self.push(makeFile(childPath, type, base, cwd));
+      }
       return cb();
-    }
-    fileSet = {};
-    pushFileRecursive(fileSet, path);
-    for (childPath in fileSet) {
-      this.push(makeFile(childPath, type, base, cwd));
-    }
-    return cb();
+    };
+    return getDeps(path, onDepsParsed);
   });
 };
