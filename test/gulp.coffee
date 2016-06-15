@@ -114,10 +114,10 @@ describe 'gulp-progeny should', ->
 					assert partialCount is 2
 					i++
 				when 6
-					assert altCount is 3
+					assert testCount is 3
 					i++
 				when 7
-					assert testCount is 3
+					assert altCount is 3
 				else
 					assert false
 		stream = prepareTestStream(test)

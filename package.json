@@ -16,7 +16,7 @@
     "colors": "^1.1.2",
     "glob": "^4.0.5",
     "gulp-util": "^2.2.20",
-    "pat-mat": "^0.1.1",
+    "progeny": "^0.7.0",
     "through2": "^0.5.1"
   },
   "devDependencies": {
