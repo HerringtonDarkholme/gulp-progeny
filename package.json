@@ -13,17 +13,15 @@
     "compile"
   ],
   "dependencies": {
-    "colors": "^1.1.2",
-    "glob": "^4.0.5",
-    "gulp-util": "^2.2.20",
+    "gulp-util": "^3.0.7",
     "progeny": "^0.7.0",
-    "through2": "^0.5.1"
+    "through2": "^2.0.1"
   },
   "devDependencies": {
     "coffee-script": "^1.9.3",
     "gulp": "^3.8.6",
     "gulp-coffee": "^2.1.1",
-    "gulp-mocha": "^0.5.2",
+    "gulp-mocha": "^2.2.0",
     "mocha": "*"
   },
   "author": "Herrington Darkholme",
