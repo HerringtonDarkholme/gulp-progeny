@@ -1,7 +1,7 @@
 gulp-progeny [![Build Status](https://travis-ci.org/HerringtonDarkholme/gulp-progeny.svg?branch=master)](https://travis-ci.org/HerringtonDarkholme/gulp-progeny)
 ===============
-A dependency-resolving plugin for Gulp.
-It grabs all files related to one edition to building system.
+A dependency-resolving plugin for Gulp. It grabs all files related to one modification to building system.
+![Make Gulp Fast Again](https://cloud.githubusercontent.com/assets/2883231/16402559/b731b766-3d1f-11e6-9026-cb1e1d4a9278.png)
 
 ##Introduction
 Gulp provides [incremental building](https://github.com/wearefractal/gulp-cached).
