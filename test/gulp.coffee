@@ -236,3 +236,21 @@ describe 'gulp progeny should clean previous dep', ->
 		# send parent again should not update child
 		stream.write(parentFile)
 		stream.end()
+
+describe 'gulp progeny should export dep', ->
+	it 'should export dep', (done) ->
+		progeny.caches = {}
+		progeny.processedFileNames = {}
+		stream = progeny(regexp: /import (.*)/)
+		stream.on('data', ->).on('end', ->
+			ret = {}
+			ret[parentPath] = {}
+			ret[childPath] = {}
+			assert.deepEqual(progeny.caches, ret)
+			done())
+		# first time
+		stream.write(parentFile)
+		stream.write(childFile)
+		stream.write(parentFile)
+		stream.write(childFile)
+		stream.end()

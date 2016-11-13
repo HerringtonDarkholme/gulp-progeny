@@ -4,9 +4,6 @@ sysPath = require('path')
 fs = require('fs')
 progeny = require('progeny')
 
-depCache = {}
-processedFileNames = {}
-
 makeFile = (path, type, base, cwd) ->
 	file = new gutil.File({
 		base: base
@@ -25,21 +22,21 @@ initParseConfig = (config) ->
 	parser = progeny(config)
 	(path, cb) ->
 		# clear old dependencies
-		Object.keys(depCache).forEach (key) ->
-			if path of depCache[key]
-				delete depCache[key][path]
+		Object.keys(gulpProgeny.caches).forEach (key) ->
+			if path of gulpProgeny.caches[key]
+				delete gulpProgeny.caches[key][path]
 
 		parser path, (err, deps) ->
 			deps = deps.filter(fs.existsSync)
 			deps.forEach((dep) ->
-					depCache[dep] ?= {}
-					depCache[dep][path] = 1
+					gulpProgeny.caches[dep] ?= {}
+					gulpProgeny.caches[dep][path] = 1
 				)
 
 			cb()
 
 pushFileRecursive = (fileSet, path) ->
-	cache = (depCache[path] ?= {})
+	cache = (gulpProgeny.caches[path] ?= {})
 	# refresh cache
 	for childPath of cache
 		if !fs.existsSync(childPath)
@@ -48,7 +45,7 @@ pushFileRecursive = (fileSet, path) ->
 			fileSet[childPath] = 1
 			pushFileRecursive(fileSet, childPath)
 
-module.exports = (config) ->
+gulpProgeny = (config) ->
 	getDeps = initParseConfig(config)
 	return through.obj (file, enc, cb) ->
 		self = this
@@ -65,8 +62,8 @@ module.exports = (config) ->
 
 		onDepsParsed = ->
 			# do nothing when start up
-			if !processedFileNames[path]
-				processedFileNames[path] = 1
+			if !gulpProgeny.processedFileNames[path]
+				gulpProgeny.processedFileNames[path] = 1
 				return cb()
 			fileSet = {}
 			pushFileRecursive(fileSet, path)
@@ -75,3 +72,8 @@ module.exports = (config) ->
 			cb()
 
 		getDeps path, onDepsParsed
+
+gulpProgeny.caches = {}
+gulpProgeny.processedFileNames = {}
+
+module.exports = gulpProgeny

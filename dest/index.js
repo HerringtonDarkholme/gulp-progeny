@@ -1,4 +1,4 @@
-var depCache, fs, gutil, initParseConfig, makeFile, processedFileNames, progeny, pushFileRecursive, sysPath, through;
+var fs, gulpProgeny, gutil, initParseConfig, makeFile, progeny, pushFileRecursive, sysPath, through;
 
 gutil = require('gulp-util');
 
@@ -9,10 +9,6 @@ sysPath = require('path');
 fs = require('fs');
 
 progeny = require('progeny');
-
-depCache = {};
-
-processedFileNames = {};
 
 makeFile = function(path, type, base, cwd) {
   var file;
@@ -34,18 +30,19 @@ initParseConfig = function(config) {
   var parser;
   parser = progeny(config);
   return function(path, cb) {
-    Object.keys(depCache).forEach(function(key) {
-      if (path in depCache[key]) {
-        return delete depCache[key][path];
+    Object.keys(gulpProgeny.caches).forEach(function(key) {
+      if (path in gulpProgeny.caches[key]) {
+        return delete gulpProgeny.caches[key][path];
       }
     });
     return parser(path, function(err, deps) {
       deps = deps.filter(fs.existsSync);
       deps.forEach(function(dep) {
-        if (depCache[dep] == null) {
-          depCache[dep] = {};
+        var base1;
+        if ((base1 = gulpProgeny.caches)[dep] == null) {
+          base1[dep] = {};
         }
-        return depCache[dep][path] = 1;
+        return gulpProgeny.caches[dep][path] = 1;
       });
       return cb();
     });
@@ -53,8 +50,8 @@ initParseConfig = function(config) {
 };
 
 pushFileRecursive = function(fileSet, path) {
-  var cache, childPath, results;
-  cache = (depCache[path] != null ? depCache[path] : depCache[path] = {});
+  var base1, cache, childPath, results;
+  cache = ((base1 = gulpProgeny.caches)[path] != null ? base1[path] : base1[path] = {});
   results = [];
   for (childPath in cache) {
     if (!fs.existsSync(childPath)) {
@@ -67,7 +64,7 @@ pushFileRecursive = function(fileSet, path) {
   return results;
 };
 
-module.exports = function(config) {
+gulpProgeny = function(config) {
   var getDeps;
   getDeps = initParseConfig(config);
   return through.obj(function(file, enc, cb) {
@@ -86,8 +83,8 @@ module.exports = function(config) {
     this.push(file);
     onDepsParsed = function() {
       var childPath, fileSet;
-      if (!processedFileNames[path]) {
-        processedFileNames[path] = 1;
+      if (!gulpProgeny.processedFileNames[path]) {
+        gulpProgeny.processedFileNames[path] = 1;
         return cb();
       }
       fileSet = {};
@@ -100,3 +97,9 @@ module.exports = function(config) {
     return getDeps(path, onDepsParsed);
   });
 };
+
+gulpProgeny.caches = {};
+
+gulpProgeny.processedFileNames = {};
+
+module.exports = gulpProgeny;

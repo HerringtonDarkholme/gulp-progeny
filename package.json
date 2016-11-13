@@ -4,6 +4,7 @@
   "description": "Gulp plugin for dependencies building",
   "main": "dest/index.js",
   "scripts": {
+    "prepublish": "gulp coffee",
     "test": "mocha --compilers coffee:coffee-script/register"
   },
   "keywords": [
