@@ -1,6 +1,6 @@
-var fs, gulpProgeny, gutil, initParseConfig, makeFile, progeny, pushFileRecursive, sysPath, through;
+var Vinyl, fs, gulpProgeny, initParseConfig, makeFile, progeny, pushFileRecursive, sysPath, through;
 
-gutil = require('gulp-util');
+Vinyl = require('vinyl');
 
 through = require('through2');
 
@@ -12,7 +12,7 @@ progeny = require('progeny');
 
 makeFile = function(path, type, base, cwd) {
   var file;
-  file = new gutil.File({
+  file = new Vinyl({
     base: base,
     cwd: cwd,
     path: path,
