@@ -1,12 +1,12 @@
 gulp = require('gulp')
 coffee = require('gulp-coffee')
-gutil = require('gulp-util')
+log = require('fancy-log')
 mocha = require('gulp-mocha')
 
 gulp.task('coffee', ->
 	gulp.src('./src/**/*.coffee')
 		.pipe(coffee(bare: true))
-		.on('error', gutil.log)
+		.on('error', log)
 		.pipe(gulp.dest('./dest'))
 )
 

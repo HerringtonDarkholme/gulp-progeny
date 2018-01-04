@@ -1,11 +1,11 @@
-gutil = require('gulp-util')
+Vinyl = require('vinyl')
 through = require('through2')
 sysPath = require('path')
 fs = require('fs')
 progeny = require('progeny')
 
 makeFile = (path, type, base, cwd) ->
-	file = new gutil.File({
+	file = new Vinyl({
 		base: base
 		cwd: cwd
 		path: path

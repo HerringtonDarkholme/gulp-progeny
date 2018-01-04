@@ -1,4 +1,4 @@
-gutil = require('gulp-util')
+Vinyl = require('vinyl')
 path = require('path')
 progeny = require('../dest/index')
 fs = require('fs')
@@ -8,21 +8,21 @@ testPath = path.join(__dirname, 'fixtures', 'test.jade')
 altPath = path.join(__dirname, 'fixtures', 'altExtensions.jade')
 partialPath = path.join(__dirname, 'fixtures', 'htmlPartial.html')
 
-testFile = new gutil.File({
+testFile = new Vinyl({
 	base: path.dirname(testPath)
 	cwd: __dirname
 	path: testPath
 	contents: fs.readFileSync(testPath)
 })
 
-altFile = new gutil.File({
+altFile = new Vinyl({
 	base: path.dirname(altPath)
 	cwd: __dirname
 	path: altPath
 	contents: fs.readFileSync(altPath)
 })
 
-partialFile = new gutil.File({
+partialFile = new Vinyl({
 	base: path.dirname(partialPath)
 	cwd: __dirname
 	path: partialPath
@@ -152,19 +152,19 @@ describe 'gulp-progeny should', ->
 			assert t = 3
 			done()
 		)
-		stylFile = new gutil.File({
+		stylFile = new Vinyl({
 			base: path.dirname(styl)
 			cwd: __dirname
 			path: styl
 			contents: fs.readFileSync(styl)
 		})
-		aFile = new gutil.File({
+		aFile = new Vinyl({
 			base: path.dirname(styl)
 			cwd: __dirname
 			path: aPath
 			contents: fs.readFileSync(aPath)
 		})
-		bFile = new gutil.File({
+		bFile = new Vinyl({
 			base: path.dirname(styl)
 			cwd: __dirname
 			path: bPath
@@ -179,14 +179,14 @@ describe 'gulp-progeny should', ->
 
 parentPath = path.join(__dirname, 'fixtures', 'parent.test')
 childPath = path.join(__dirname, 'fixtures', 'child.test')
-parentFile = new gutil.File({
+parentFile = new Vinyl({
 	base: path.dirname(parentPath)
 	cwd: __dirname
 	path: parentPath
 	contents: fs.readFileSync(parentPath)
 })
 fs.writeFileSync(childPath, 'import parent.test')
-childFile = new gutil.File({
+childFile = new Vinyl({
 	base: path.dirname(childPath)
 	cwd: __dirname
 	path: childPath
