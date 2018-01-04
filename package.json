@@ -1,9 +1,11 @@
 {
   "name": "gulp-progeny",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Gulp plugin for dependencies building",
   "main": "dest/index.js",
-  "files": ["dest"],
+  "files": [
+    "dest"
+  ],
   "scripts": {
     "prepublish": "gulp coffee",
     "test": "mocha --compilers coffee:coffee-script/register"
